@@ -29,14 +29,15 @@ entity labfinal is
     -- 8 segments side
     segs_n   : out std_logic_vector(7 downto 0);
     an_n     : out std_logic_vector(3 downto 0);
-    
     -- Keyboard side
     ps2Clk   : in  std_logic;
     ps2Data  : in  std_logic;
     -- VGA side
     hSync    : out  std_logic;
     vSync    : out  std_logic;
-    RGB      : out  std_logic_vector(11 downto 0)
+    RGB      : out  std_logic_vector(11 downto 0);
+    -- Speaker side
+    speaker  : out std_logic
   );
 end labfinal;
 
@@ -165,6 +166,7 @@ architecture syn of labfinal is
       -- con que uno de los dos falle pierde
       if (mode = '0') then
         restart <= spcP and (endLeftGame or endRightGame);
+      
       -- si uno falla, el otro puede seguir jugando
       else
         restart <= spcP and endLeftGame and endRightGame;
@@ -183,8 +185,10 @@ architecture syn of labfinal is
               count := 0;
               move <= false;
           else
-            move <= false;  
-            if endLeftGame and endRightGame then
+            move <= false;
+            if endLeftGame and endRightGame and mode = '1' then
+              count := 0;
+            elsif (endLeftGame or endRightGame) and mode = '0' then
               count := 0;
             else
               count := count + 1 mod CYCLES;
@@ -214,6 +218,28 @@ architecture syn of labfinal is
     -- Setups all the colouring needed to represent the game
     fieldColouring:
     process (pixel, line)
+      constant SIZE : natural := 16;
+      type pointerRom is array(0 to SIZE*SIZE-1) of natural range 0 to 4;
+      constant rom: pointerRom := (
+        0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,
+        0,0,0,0,0,1,1,1,1,1,1,0,0,0,0,0,
+        0,0,0,0,1,1,1,1,1,1,1,1,0,0,0,0,
+        0,0,0,1,1,1,1,1,1,1,1,1,1,0,0,0,
+        0,0,1,1,1,1,1,3,3,1,1,1,1,1,0,0,
+        0,1,1,1,1,1,3,4,4,3,1,1,1,1,1,0,
+        0,1,1,1,1,1,1,3,3,1,1,1,1,1,1,0,
+        0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,
+        0,0,1,1,1,1,1,1,1,1,1,1,1,1,0,0,
+        0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,
+        0,0,0,0,0,0,2,2,0,0,1,1,0,0,0,0,
+        0,0,0,0,0,2,2,2,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+      );
+      variable xAddr : natural range 0 to SIZE - 1;
+      variable yAddr : natural range 0 to SIZE - 1;
     begin
       color <= (others => '0');
 
@@ -223,11 +249,28 @@ architecture syn of labfinal is
         
       -- Represent the left bird
       elsif pixel >= xLeftBird and pixel < xLeftBird + BIRD_SIZE and line >= DEFAULT_Y_BIRDS and line < DEFAULT_Y_BIRDS + BIRD_SIZE then
-        color <= "111111111111";
+        xAddr := to_integer(unsigned(pixel) - xLeftBird);
+        yAddr := to_integer(unsigned(line) - DEFAULT_Y_BIRDS);
+        case rom(yAddr * SIZE + xAddr) is
+          when 0 => null;
+          when 1 => color <= x"000";
+          when 2 => color <= x"FF0";
+          when 3 => color <= x"FFF";
+          when 4 => color <= x"000";
+        end case;
+        
 
       -- Represent the right bird
       elsif pixel >= xRightBird and pixel < xRightBird + BIRD_SIZE and line >= DEFAULT_Y_BIRDS and line < DEFAULT_Y_BIRDS + BIRD_SIZE then
-        color <= "111111111111";
+        xAddr := to_integer(unsigned(pixel) - xRightBird);
+        yAddr := to_integer(unsigned(line) - DEFAULT_Y_BIRDS);
+        case rom(yAddr * SIZE + xAddr) is
+          when 0 => null;
+          when 1 => color <= x"FF0";
+          when 2 => color <= x"FA0";
+          when 3 => color <= x"FFF";
+          when 4 => color <= x"000";
+        end case;
       
       -- Represent the left wall
       elsif line >= yLeftWall and line < yLeftWall + HEIGHT_MOVING_WALLS
@@ -237,8 +280,7 @@ architecture syn of labfinal is
       -- Represent the right wall
       elsif (line >= yRightWall and line < yRightWall + HEIGHT_MOVING_WALLS) 
         and ((pixel >= 81 and pixel < xRightWall) or pixel >= xRightWall + GAP_MOVING_WALLS) then
-        color <= "000000001111";    
-      
+        color <= "000000001111";
       end if;
     end process;
     
@@ -374,7 +416,7 @@ architecture syn of labfinal is
                 state := s2;
               end if;
             end if;
-          -- podria haber colisión
+          -- podria haber colisiï¿½n
           when s2 =>
             if xRightWall < xRightBird and xRightWall + GAP_MOVING_WALLS > xRightBird + BIRD_SIZE then
               counterRight <= counterRight + 1;
