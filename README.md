@@ -1,12 +1,14 @@
 # parallel-flappy-bird
-Implementación de un juego parecido a Flappy Bird pero dividido en dos partes verticalmente, donde el jugador debe superar las distintas paredes que irán bajando a distinto ritmo
+A custom version of Flappy Bird made for a Basys3 FPGA
 
-# Señal mode
-Con el sw0 de la basys3, podemos elegir el modo de partida, si elegimos el 0, entonces si uno de los flappy birds pierde, debemos pulsar espacio para seguir
-Si hemos elegido el 1, entonces podremos seguir jugando con el otro personaje hasta que también pierda 
+# Game mode
+We can choose the individual mode or double mode with basys3's sw0
+
+# Background mode
+Sw15 is enabled to switch berween a dark mode and the data captured by a OV7670 camera, with a custom made VHDL module to control the data flow
 
 > [!CAUTION]
-> Los módulos usados en la carpeta commons han sido desarrollados en las clases de la asignatura de Diseño Automático de Sistemas, la gran parte del codigo y diseño de los mismos ha sido realizada por el Prof. José Manuel Mendías Cuadros
+> Modules used as commonshave been developed in Actuomatic Design Systems classes, a good part of the code have been done by José Manuel Mendías Cuadros
 
 > [!NOTE]
-> Algunas de las imágenes en la carpeta assets están generadas con IA
+> Some of the images are AI-made
