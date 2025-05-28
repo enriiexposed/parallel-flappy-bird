@@ -13,13 +13,13 @@ create_clock -name sysClk -period 10.0 -waveform {0 5} [get_ports clk];
 #
 # Pines conectados a los pulsadores
 #
-set_property -dict { PACKAGE_PIN T18 IOSTANDARD LVCMOS33 } [get_ports rst];    # btnU
+set_property -dict { PACKAGE_PIN T18 IOSTANDARD LVCMOS33 } [get_ports rst];    # btnUp
 
 #
 # Pin conectado al switch
 #
 set_property -dict { PACKAGE_PIN V17 IOSTANDARD LVCMOS33 } [get_ports mode];    # SW0
-
+set_property -dict { PACKAGE_PIN R2 IOSTANDARD LVCMOS33 } [get_ports background];    # SW15
 #
 # Pines conectados al display 7 segmentos
 #
@@ -60,6 +60,26 @@ set_property -dict { PACKAGE_PIN J18 IOSTANDARD LVCMOS33 } [get_ports {RGB[3]}];
 set_property -dict { PACKAGE_PIN K18 IOSTANDARD LVCMOS33 } [get_ports {RGB[2]}];     #B2
 set_property -dict { PACKAGE_PIN L18 IOSTANDARD LVCMOS33 } [get_ports {RGB[1]}];     #B1
 set_property -dict { PACKAGE_PIN N18 IOSTANDARD LVCMOS33 } [get_ports {RGB[0]}];     #B0
+
+#
+# Pines conectados a la cámara
+#
+set_property -dict { PACKAGE_PIN J1   IOSTANDARD LVCMOS33 } [get_ports {cData[7]}];
+set_property -dict { PACKAGE_PIN L2   IOSTANDARD LVCMOS33 } [get_ports pClk];
+set_property -dict { PACKAGE_PIN J2   IOSTANDARD LVCMOS33 } [get_ports cvSync];
+set_property -dict { PACKAGE_PIN G2   IOSTANDARD LVCMOS33 } [get_ports sioc];
+set_property -dict { PACKAGE_PIN H1   IOSTANDARD LVCMOS33 } [get_ports {cData[6]}];
+set_property -dict { PACKAGE_PIN K2   IOSTANDARD LVCMOS33 } [get_ports xClk];
+set_property -dict { PACKAGE_PIN H2   IOSTANDARD LVCMOS33 } [get_ports hRef];
+set_property -dict { PACKAGE_PIN G3   IOSTANDARD LVCMOS33 } [get_ports siod];
+set_property -dict { PACKAGE_PIN J3   IOSTANDARD LVCMOS33 } [get_ports rst_n];
+set_property -dict { PACKAGE_PIN L3   IOSTANDARD LVCMOS33 } [get_ports {cData[1]}];
+set_property -dict { PACKAGE_PIN M2   IOSTANDARD LVCMOS33 } [get_ports {cData[3]}];
+set_property -dict { PACKAGE_PIN N2   IOSTANDARD LVCMOS33 } [get_ports {cData[5]}];
+set_property -dict { PACKAGE_PIN K3   IOSTANDARD LVCMOS33 } [get_ports pwdn];
+set_property -dict { PACKAGE_PIN M3   IOSTANDARD LVCMOS33 } [get_ports {cData[0]}];
+set_property -dict { PACKAGE_PIN M1   IOSTANDARD LVCMOS33 } [get_ports {cData[2]}];
+set_property -dict { PACKAGE_PIN N1   IOSTANDARD LVCMOS33 } [get_ports {cData[4]}];
 
 #
 # Pines conectados al PMOD JC
